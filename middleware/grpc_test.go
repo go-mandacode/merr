@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mandacode-com/merr"
+	"github.com/go-mandacode/merr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"

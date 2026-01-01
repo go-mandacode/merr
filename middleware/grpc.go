@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/mandacode-com/merr"
+	"github.com/go-mandacode/merr"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
