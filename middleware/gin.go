@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mandacode-com/merr"
+	"github.com/go-mandacode/merr"
 )
 
 // ErrorResponse represents the JSON structure for error responses
