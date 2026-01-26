@@ -2,7 +2,6 @@ package merrmid
 
 import (
 	"context"
-	"log"
 
 	"github.com/go-mandacode/merr"
 	"google.golang.org/grpc"
@@ -17,8 +16,6 @@ func GRPCErrorInterceptor() grpc.UnaryServerInterceptor {
 
 // GRPCErrorInterceptorOptions provides configuration options for the gRPC error interceptor
 type GRPCErrorInterceptorOptions struct {
-	// LogErrors determines whether to log internal errors (default: true)
-	LogErrors bool
 	// OnInternalError is called when a non-public error occurs
 	OnInternalError func(ctx context.Context, err error) error
 	// OnPublicError is called when a public error occurs, allows customization
@@ -28,9 +25,7 @@ type GRPCErrorInterceptorOptions struct {
 // GRPCErrorInterceptorWithOptions creates a gRPC error interceptor with custom options
 func GRPCErrorInterceptorWithOptions(opts *GRPCErrorInterceptorOptions) grpc.UnaryServerInterceptor {
 	if opts == nil {
-		opts = &GRPCErrorInterceptorOptions{
-			LogErrors: true,
-		}
+		opts = &GRPCErrorInterceptorOptions{}
 	}
 
 	return func(
@@ -58,11 +53,6 @@ func GRPCErrorInterceptorWithOptions(opts *GRPCErrorInterceptorOptions) grpc.Una
 			)
 		}
 
-		// Handle other errors
-		if opts.LogErrors {
-			log.Printf("gRPC internal error in %s: %v", info.FullMethod, err)
-		}
-
 		if opts.OnInternalError != nil {
 			if customErr := opts.OnInternalError(ctx, err); customErr != nil {
 				return nil, customErr
@@ -87,9 +77,7 @@ func GRPCStreamErrorInterceptor() grpc.StreamServerInterceptor {
 // GRPCStreamErrorInterceptorWithOptions creates a streaming gRPC error interceptor with custom options
 func GRPCStreamErrorInterceptorWithOptions(opts *GRPCErrorInterceptorOptions) grpc.StreamServerInterceptor {
 	if opts == nil {
-		opts = &GRPCErrorInterceptorOptions{
-			LogErrors: true,
-		}
+		opts = &GRPCErrorInterceptorOptions{}
 	}
 
 	return func(
@@ -118,10 +106,6 @@ func GRPCStreamErrorInterceptorWithOptions(opts *GRPCErrorInterceptorOptions) gr
 		}
 
 		// Handle other errors
-		if opts.LogErrors {
-			log.Printf("gRPC stream internal error in %s: %v", info.FullMethod, err)
-		}
-
 		if opts.OnInternalError != nil {
 			if customErr := opts.OnInternalError(stream.Context(), err); customErr != nil {
 				return customErr
