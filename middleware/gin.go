@@ -1,8 +1,6 @@
 package merrmid
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-mandacode/merr"
 )
@@ -22,8 +20,6 @@ func GinErrorHandler() gin.HandlerFunc {
 
 // GinErrorHandlerOptions provides configuration options for the error handler
 type GinErrorHandlerOptions struct {
-	// LogErrors determines whether to log internal errors (default: true)
-	LogErrors bool
 	// CustomErrorResponse allows customizing the error response format
 	CustomErrorResponse func(c *gin.Context, publicErr merr.PublicErr)
 	// OnInternalError is called when a non-public error occurs
@@ -33,9 +29,7 @@ type GinErrorHandlerOptions struct {
 // GinErrorHandlerWithOptions creates a Gin error handler with custom options
 func GinErrorHandlerWithOptions(opts *GinErrorHandlerOptions) gin.HandlerFunc {
 	if opts == nil {
-		opts = &GinErrorHandlerOptions{
-			LogErrors: true,
-		}
+		opts = &GinErrorHandlerOptions{}
 	}
 
 	return func(c *gin.Context) {
@@ -74,10 +68,6 @@ func GinErrorHandlerWithOptions(opts *GinErrorHandlerOptions) gin.HandlerFunc {
 
 		// Handle internal error
 		if internalErr != nil {
-			if opts.LogErrors {
-				log.Printf("Internal error: %v", internalErr)
-			}
-
 			if opts.OnInternalError != nil {
 				opts.OnInternalError(c, internalErr)
 			} else {
