@@ -51,7 +51,7 @@ func GRPCErrorInterceptorWithOptions(opts *GRPCErrorInterceptorOptions) grpc.Una
 					return nil, customErr
 				}
 			}
-			
+
 			return nil, status.Errorf(
 				publicErr.Code().ToGRPCCode(),
 				"%s", publicErr.Public(),
@@ -110,7 +110,7 @@ func GRPCStreamErrorInterceptorWithOptions(opts *GRPCErrorInterceptorOptions) gr
 					return customErr
 				}
 			}
-			
+
 			return status.Errorf(
 				publicErr.Code().ToGRPCCode(),
 				"%s", publicErr.Public(),
