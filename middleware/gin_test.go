@@ -15,10 +15,10 @@ import (
 
 func TestGinErrorHandler_PublicError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	r := gin.New()
 	r.Use(GinErrorHandler())
-	
+
 	r.GET("/test", func(c *gin.Context) {
 		baseErr := errors.New("database connection failed")
 		publicErr := merr.New(merr.ErrNotFound, "User not found", baseErr)
@@ -30,21 +30,21 @@ func TestGinErrorHandler_PublicError(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	
+
 	var response ErrorResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	require.NoError(t, err)
-	
+
 	assert.Equal(t, "User not found", response.Error)
 	assert.Equal(t, merr.ErrNotFound, response.Code)
 }
 
 func TestGinErrorHandler_InternalError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	r := gin.New()
 	r.Use(GinErrorHandler())
-	
+
 	r.GET("/test", func(c *gin.Context) {
 		c.Error(errors.New("internal error"))
 	})
@@ -54,21 +54,21 @@ func TestGinErrorHandler_InternalError(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	
+
 	var response ErrorResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	require.NoError(t, err)
-	
+
 	assert.Equal(t, "Internal server error", response.Error)
-	assert.Equal(t, merr.ErrInternalServerError, response.Code)
+	assert.Equal(t, merr.ErrInternal, response.Code)
 }
 
 func TestGinErrorHandler_NoErrors(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	r := gin.New()
 	r.Use(GinErrorHandler())
-	
+
 	r.GET("/test", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	})
@@ -82,10 +82,10 @@ func TestGinErrorHandler_NoErrors(t *testing.T) {
 
 func TestAbortWithPublicError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	r := gin.New()
 	r.Use(GinErrorHandler())
-	
+
 	r.GET("/test", func(c *gin.Context) {
 		baseErr := errors.New("validation failed")
 		AbortWithPublicError(c, merr.ErrInvalidInput, "Invalid input provided", baseErr)
@@ -96,11 +96,11 @@ func TestAbortWithPublicError(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	
+
 	var response ErrorResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	require.NoError(t, err)
-	
+
 	assert.Equal(t, "Invalid input provided", response.Error)
 	assert.Equal(t, merr.ErrInvalidInput, response.Code)
 }

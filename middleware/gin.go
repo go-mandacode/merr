@@ -9,8 +9,8 @@ import (
 
 // ErrorResponse represents the JSON structure for error responses
 type ErrorResponse struct {
-	Error string         `json:"error"`
-	Code  merr.ErrCode   `json:"code"`
+	Error string       `json:"error"`
+	Code  merr.ErrCode `json:"code"`
 }
 
 // GinErrorHandler is a Gin middleware that handles errors and converts them to JSON responses.
@@ -77,13 +77,13 @@ func GinErrorHandlerWithOptions(opts *GinErrorHandlerOptions) gin.HandlerFunc {
 			if opts.LogErrors {
 				log.Printf("Internal error: %v", internalErr)
 			}
-			
+
 			if opts.OnInternalError != nil {
 				opts.OnInternalError(c, internalErr)
 			} else {
-				c.JSON(merr.ErrInternalServerError.ToHTTPStatus(), ErrorResponse{
+				c.JSON(merr.ErrInternal.ToHTTPStatus(), ErrorResponse{
 					Error: "Internal server error",
-					Code:  merr.ErrInternalServerError,
+					Code:  merr.ErrInternal,
 				})
 			}
 		}
